@@ -11,3 +11,5 @@ discord_handle: "@yourhandle"
 Hi, I'm Silvia. This is my corner of the internet — a place for things I make, notice, and want to remember.
 
 Replace this text with whatever you like. Each paragraph here becomes a paragraph on the front page.
+
+(Test edit from Claude — this line will be removed in a minute.)
