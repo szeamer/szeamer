@@ -108,16 +108,22 @@ Listed images come first, in that order; the rest follow, titled from their file
 
 ### Publishing
 
-| Command | What it does |
-| --- | --- |
-| `npm run dev` | Sync once, then run the local preview at http://localhost:4321 |
-| `npm run watch` | Keep syncing while you edit (run next to `npm run dev` for live preview) |
-| `npm run publish` | Sync, check the build, commit `src/content/vault`, push |
-| `node scripts/obsidian-watch.mjs` | Publish automatically 60s after you stop editing |
+Nothing goes live until you publish. In Obsidian, the left sidebar has two buttons
+(also in the command palette, `Cmd-P`) from the `szeamer website` plugin
+(`.obsidian/plugins/szeamer-publish` in the vault):
 
-Only `src/content/vault/` is committed automatically. Code changes still go through
-Magit as before. A failed build is never pushed, and you get a macOS notification
-either way.
+| Button | What it does |
+| --- | --- |
+| ☁ **Publish website** | Sync the folder, check the site builds, commit `src/content/vault`, push |
+| 👁 **Preview website** | Run the site at http://localhost:4321, updating as you type. Click again to stop |
+
+A failed build is never pushed; the notice says what went wrong, and the full output
+goes to `~/Library/Logs/szeamer-publish.log`. Only `src/content/vault/` is committed
+by Publish. Code changes still go through Magit as before.
+
+From a terminal, the same things are `npm run publish`, and `npm run dev` with
+`npm run watch` next to it. `scripts/com.szeamer.obsidian-publish.plist` is an optional
+LaunchAgent that publishes automatically 60s after you stop editing (off by default).
 
 ## Editing the styling
 

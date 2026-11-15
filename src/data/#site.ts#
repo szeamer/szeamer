@@ -1,0 +1,48 @@
+/**
+ * Site-wide content and configuration.
+ * Everything here is plain data — edit freely, no code knowledge needed.
+ */
+
+export const site = {
+  title: 'Silvia Zeamer',
+  /** Used for <title> suffixes and the footer. */
+  shortTitle: 'szeamer description: 'Personal site: writing, art, projects, and photos.',
+  /** Shown under your name on the front page. */
+  tagline: 'Naturalist, maker, occasional writer.',
+};
+
+/** The "about me" blurb on the front page. One string per paragraph. */
+export const about: string[] = [
+  "Hi, I'm Silvia. This is my corner of the internet — a place for things I make, notice, and want to remember.",
+  'Replace this text with whatever you like. Each string in this array becomes its own paragraph. 
+];
+
+export type NavLink = {
+  label: string;
+  href: string;
+  /** Optional one-line blurb shown next to the link on the front page. */
+  blurb?: string;
+};
+
+/** Pages linked from the header and from the front page. */
+export const navLinks: NavLink[] = [
+  { label: 'Art', href: '/art', blurb: 'Drawings and paintings.' },
+  { label: 'Projects', href: '/projects', blurb: 'Things I have built.' },
+  { label: 'Photos', href: '/phot
+    os', blurb: 'Mostly birds and other wildlife.' },
+];
+
+export type SocialLink = {
+  label: string;
+  href: string;
+  /** Optional handle/username shown after the label. */
+  handle?: string;
+};
+
+/** TODO: swap the placeholder URLs below for your real profiles. */
+export const socialLinks: SocialLink[] = [
+  { label: 'LinkedIn', href: 'https://www.linkedin.com/in/your-handle' },
+  { label: 'eBird', href: 'https://ebird.org/profile/your-profile-id' },
+  { label: 'iNaturalist', href: 'https://www.inaturalist.org/people/your-handle' },
+  { label: 'Discord', href: 'https://discord.com/users/your-user-id', handle: '@yourhandle' },
+];

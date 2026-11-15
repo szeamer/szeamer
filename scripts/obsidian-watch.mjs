@@ -32,6 +32,7 @@ function run(cmd, args) {
 
 /** A macOS notification, so you can tell whether a publish worked without a terminal. */
 function notify(message) {
+  if (process.env.SZEAMER_NO_NOTIFY) return; // the Obsidian button shows its own notice
   const esc = (s) => s.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
   spawnSync('osascript', ['-e', `display notification "${esc(message)}" with title "szeamer"`]);
 }
@@ -41,18 +42,25 @@ function publish() {
   const build = run(process.execPath, [path.join(REPO, 'node_modules/astro/bin/astro.mjs'), 'build']);
   if (!build.ok) {
     log(`Build failed, so nothing was published:\n${build.out.split('\n').slice(-25).join('\n')}`);
-    return notify('Not published: the site failed to build. See ~/Library/Logs/szeamer-publish.log');
+    process.exitCode = 1;
+    return notify('Not published: the site failed to build.');
   }
   // Only the synced content is committed, so half-finished code changes never ship by accident.
   run('git', ['add', '-A', '--', CONTENT]);
   if (run('git', ['diff', '--cached', '--quiet', '--', CONTENT]).ok) return log('Nothing new to publish.');
   const commit = run('git', ['commit', '-m', 'Update from Obsidian', '--', CONTENT]);
-  if (!commit.ok) return log(`Commit failed:\n${commit.out}`), notify('Not published: git commit failed.');
+  if (!commit.ok) {
+    process.exitCode = 1;
+    return log(`Commit failed:\n${commit.out}`), notify('Not published: git commit failed.');
+  }
   if (!run('git', ['remote', 'get-url', 'origin']).ok) {
     return log('Committed. No git remote is set up yet, so nothing was pushed.');
   }
   const push = run('git', ['push', '-u', 'origin', 'HEAD']);
-  if (!push.ok) return log(`Push failed:\n${push.out}`), notify('Not published: git push failed.');
+  if (!push.ok) {
+    process.exitCode = 1;
+    return log(`Push failed:\n${push.out}`), notify('Not published: git push failed.');
+  }
   log('Published.');
   notify('Published your changes.');
 }
@@ -69,6 +77,7 @@ function cycle() {
     if (!preview && (changed || once)) publish();
   } catch (e) {
     log(`Sync failed: ${e.message}`);
+    process.exitCode = 1;
     if (!preview) notify(`Not published: ${e.message}`);
   } finally {
     busy = false;

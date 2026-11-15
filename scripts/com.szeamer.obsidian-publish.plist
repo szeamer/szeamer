@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key><string>com.szeamer.obsidian-publish</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>/Users/silvia/.asdf/installs/nodejs/22.12.0/bin/node</string>
+    <string>/Users/silvia/Documents/szeamer/scripts/obsidian-watch.mjs</string>
+  </array>
+  <key>WorkingDirectory</key><string>/Users/silvia/Documents/szeamer</string>
+  <key>EnvironmentVariables</key>
+  <dict><key>PATH</key><string>/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin</string></dict>
+  <key>RunAtLoad</key><true/>
+  <key>KeepAlive</key><true/>
+  <key>ThrottleInterval</key><integer>30</integer>
+  <key>StandardOutPath</key><string>/Users/silvia/Library/Logs/szeamer-publish.log</string>
+  <key>StandardErrorPath</key><string>/Users/silvia/Library/Logs/szeamer-publish.log</string>
+</dict>
+</plist>
