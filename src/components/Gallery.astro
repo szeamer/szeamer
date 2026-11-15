@@ -1,0 +1,44 @@
+---
+import { Image } from 'astro:assets';
+import type { GalleryItem } from '../lib/gallery';
+
+interface Props {
+  items: GalleryItem[];
+  /** Shown when the folder is still empty. */
+  emptyMessage?: string;
+  /** Rendered width of each tile; the grid serves a 2x version for retina. */
+  width?: number;
+}
+
+const { items, emptyMessage = 'Nothing here yet.', width = 640 } = Astro.props;
+---
+
+{
+  items.length === 0 ? (
+    <div class="empty-state">
+      <p>{emptyMessage}</p>
+    </div>
+  ) : (
+    <ul class="gallery">
+      {items.map((item) => (
+        <li>
+          <figure class="gallery__figure">
+            <Image
+              class="gallery__image"
+              src={item.src}
+              alt={item.caption ?? item.title}
+              width={width}
+              densities={[1, 2]}
+              loading="lazy"
+            />
+            <figcaption class="gallery__caption">
+              <span class="gallery__title">{item.title}</span>
+              {item.year && <span class="gallery__year"> — {item.year}</span>}
+              {item.caption && <span class="gallery__note">{item.caption}</span>}
+            </figcaption>
+          </figure>
+        </li>
+      ))}
+    </ul>
+  )
+}

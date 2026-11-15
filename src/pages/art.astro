@@ -1,0 +1,14 @@
+---
+import Base from '../layouts/Base.astro';
+import Gallery from '../components/Gallery.astro';
+import { art } from '../data/art';
+---
+
+<Base title="Art" description="Drawings, paintings and other work." wide>
+  <h1 class="page-title">Art</h1>
+  <p class="page-intro">Drawings, paintings and other work.</p>
+  <Gallery
+    items={art}
+    emptyMessage="No art yet — add images to the Art folder in Obsidian and they will appear here."
+  />
+</Base>

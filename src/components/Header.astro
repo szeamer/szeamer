@@ -1,0 +1,27 @@
+---
+import { site, navLinks } from '../data/site';
+
+interface Props {
+  shell: string;
+}
+
+const { shell } = Astro.props;
+const path = Astro.url.pathname.replace(/\/$/, '') || '/';
+---
+
+<header class="site-header">
+  <div class={shell}>
+    <div class="site-header__inner">
+      <p class="site-header__title"><a href="/">{site.title}</a></p>
+      <nav class="site-nav" aria-label="Main">
+        {
+          navLinks.map((link) => (
+            <a href={link.href} aria-current={path === link.href ? 'page' : undefined}>
+              {link.label}
+            </a>
+          ))
+        }
+      </nav>
+    </div>
+  </div>
+</header>

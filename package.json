@@ -1,0 +1,26 @@
+{
+  "name": "szeamer",
+  "type": "module",
+  "version": "0.0.1",
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "scripts": {
+    "dev": "node scripts/obsidian-sync.mjs && astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro",
+    "sync": "node scripts/obsidian-sync.mjs",
+    "watch": "node scripts/obsidian-watch.mjs --preview",
+    "publish": "node scripts/obsidian-watch.mjs --once"
+  },
+  "dependencies": {
+    "astro": "^7.3.3",
+    "js-yaml": "^4.1.0",
+    "github-slugger": "^2.0.0"
+  },
+  "allowScripts": {
+    "esbuild": true,
+    "sharp": true
+  }
+}

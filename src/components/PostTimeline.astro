@@ -1,0 +1,36 @@
+---
+import { formatDate, type Post } from '../lib/posts';
+
+interface Props {
+  posts: Post[];
+  /** Show at most this many. Omit for all of them. */
+  limit?: number;
+}
+
+const { posts, limit } = Astro.props;
+const shown = limit ? posts.slice(0, limit) : posts;
+---
+
+{
+  shown.length === 0 ? (
+    <div class="empty-state">
+      <p>No posts yet. Add a note to the Blog folder in Obsidian to start.</p>
+    </div>
+  ) : (
+    <ul class="timeline">
+      {shown.map((post) => (
+        <li class="timeline__item">
+          <time class="timeline__date" datetime={post.data.date.toISOString()}>
+            {formatDate(post.data.date)}
+          </time>
+          <span>
+            <a class="timeline__link" href={`/blog/${post.id}/`}>
+              {post.data.title}
+            </a>
+            {post.data.draft && <span class="timeline__draft">draft</span>}
+          </span>
+        </li>
+      ))}
+    </ul>
+  )
+}

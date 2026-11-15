@@ -1,0 +1,23 @@
+---
+import { socialLinks } from '../data/site';
+
+interface Props {
+  /** Lay the links out in a row instead of a stacked list. */
+  inline?: boolean;
+}
+
+const { inline = false } = Astro.props;
+---
+
+<ul class={inline ? 'link-list link-list--inline' : 'link-list'}>
+  {
+    socialLinks.map((link) => (
+      <li class="link-list__item">
+        <a href={link.href} rel="me noopener" target="_blank">
+          {link.label}
+        </a>
+        {link.handle && <span class="link-list__handle">{link.handle}</span>}
+      </li>
+    ))
+  }
+</ul>

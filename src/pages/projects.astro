@@ -1,0 +1,41 @@
+---
+import { getCollection, render } from 'astro:content';
+import Base from '../layouts/Base.astro';
+
+// One note per project in the Projects folder in Obsidian. Sorted by the
+// `order` property (lowest first), then by name.
+const entries = (await getCollection('projects', ({ data }) => import.meta.env.DEV || !data.draft))
+  .sort(
+    (a, b) =>
+      (a.data.order ?? Infinity) - (b.data.order ?? Infinity) ||
+      a.data.title.localeCompare(b.data.title),
+  );
+const projects = await Promise.all(
+  entries.map(async (entry) => ({ ...entry.data, Content: (await render(entry)).Content })),
+);
+---
+
+<Base title="Projects" description="Things I have built.">
+  <h1 class="page-title">Projects</h1>
+  <p class="page-intro">Things I have built.</p>
+
+  {
+    projects.length === 0 ? (
+      <div class="empty-state">
+        <p>No projects listed yet. Add a note to the Projects folder in Obsidian.</p>
+      </div>
+    ) : (
+      <ul class="project-list">
+        {projects.map(({ title, link, meta, Content }) => (
+          <li>
+            <h2 class="project__title">{link ? <a href={link}>{title}</a> : title}</h2>
+            {meta && <p class="project__meta">{meta}</p>}
+            <div class="project__description">
+              <Content />
+            </div>
+          </li>
+        ))}
+      </ul>
+    )
+  }
+</Base>

@@ -1,0 +1,14 @@
+---
+import Base from '../layouts/Base.astro';
+import Gallery from '../components/Gallery.astro';
+import { photos } from '../data/photos';
+---
+
+<Base title="Photos" description="Mostly birds and other wildlife." wide>
+  <h1 class="page-title">Photos</h1>
+  <p class="page-intro">Mostly birds and other wildlife.</p>
+  <Gallery
+    items={photos}
+    emptyMessage="No photos yet — add images to the Photos folder in Obsidian and they will appear here."
+  />
+</Base>
