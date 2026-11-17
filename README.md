@@ -78,7 +78,8 @@ hand, because the next sync overwrites it.
 | Blog posts | One note per post in `Blog/` |
 | Projects | One note per project in `Projects/` (properties `link`, `meta`, `order`) |
 | Art / photos | Images in `Art/` / `Photos/`; titles and captions in `Art.md` / `Photos.md` |
-| Header/front-page links | `navLinks` in `src/data/site.ts` (code, not Obsidian) |
+| Which sections exist | `pages` property of `Home.md`: any of `Writing`, `Art`, `Projects`, `Photos`. Empty = landing page only; unlisted sections aren't linked or built |
+| Header/front-page link labels and blurbs | `navLinks` in `src/data/site.ts` (code, not Obsidian) |
 
 Templates `website post` and `website project` are in the vault's `templates` folder.
 
