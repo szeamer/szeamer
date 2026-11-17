@@ -32,7 +32,7 @@ function hiddenSections() {
 export default defineConfig({
   integrations: [hiddenSections()],
   // Used for absolute URLs in /rss.xml. GitHub Pages serves the site here.
-  site: 'https://www.szeamer.art',
+  site: 'https://szeamer.art',
   markdown: {
     shikiConfig: {
       themes: { light: 'github-light', dark: 'github-dark' },
