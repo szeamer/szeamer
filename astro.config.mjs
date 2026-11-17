@@ -31,8 +31,8 @@ function hiddenSections() {
 // https://astro.build/config
 export default defineConfig({
   integrations: [hiddenSections()],
-  // TODO: set this to your real domain — it is used for absolute URLs in /rss.xml.
-  site: 'https://example.com',
+  // Used for absolute URLs in /rss.xml. GitHub Pages serves the site here.
+  site: 'https://www.szeamer.art',
   markdown: {
     shikiConfig: {
       themes: { light: 'github-light', dark: 'github-dark' },
