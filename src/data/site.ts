@@ -4,6 +4,7 @@
  * about-me text is the body of that note (rendered in src/pages/index.astro).
  */
 import { load } from 'js-yaml';
+import { shownSections } from '../lib/pages.mjs';
 
 const homeRaw = Object.values(
   import.meta.glob<string>('../content/vault/Home.md', {
@@ -29,6 +30,9 @@ export const site = {
   tagline: text('tagline') ?? '',
 };
 
+/** Sections switched on by the `pages` property of Home.md (see src/lib/pages.mjs). */
+export const shown = shownSections(home);
+
 export type NavLink = {
   label: string;
   href: string;
@@ -41,7 +45,7 @@ export const navLinks: NavLink[] = [
   { label: 'Art', href: '/art', blurb: 'Drawings and paintings.' },
   { label: 'Projects', href: '/projects', blurb: 'Things I have built.' },
   { label: 'Photos', href: '/photos', blurb: 'Mostly birds and other wildlife.' },
-];
+].filter((link) => shown.has(link.label.toLowerCase()));
 
 export type SocialLink = {
   label: string;
