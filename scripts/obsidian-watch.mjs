@@ -15,7 +15,16 @@
 import { spawnSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
-import { DEST, REPO, SRC, sync } from './obsidian-sync.mjs';
+import { DEST, REPO, SRC } from './obsidian-sync.mjs';
+
+/**
+ * Loads the sync code fresh each time, so a long-running preview picks up changes
+ * to scripts/obsidian-sync.mjs instead of running the version it started with.
+ */
+async function sync(options) {
+  const mod = await import(`./obsidian-sync.mjs?v=${fs.statSync(new URL('./obsidian-sync.mjs', import.meta.url)).mtimeMs}`);
+  return mod.sync(options);
+}
 
 const preview = process.argv.includes('--preview');
 const once = process.argv.includes('--once');
