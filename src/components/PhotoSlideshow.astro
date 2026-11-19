@@ -2,7 +2,7 @@
 /**
  * A photo post as a slideshow: one photo per screen, click the right/left half
  * (or use the arrow keys, or swipe) to move, with a single line underneath for
- * the post title, the photo's caption and a counter. Above it, a menu of all
+ * the post title, the photo's caption, its camera details and a counter. Above it, a menu of all
  * photo posts. Without JavaScript the slides still scroll sideways.
  */
 import { Image } from 'astro:assets';
@@ -43,6 +43,7 @@ const slides = slidesFor(post);
           aria-roledescription="slide"
           aria-label={`${i + 1} of ${slides.length}`}
           data-caption={slide.kind === 'photo' ? slide.caption : ''}
+          data-info={slide.kind === 'photo' ? slide.info : ''}
         >
           {slide.kind === 'photo' ? (
             <Image
@@ -63,6 +64,7 @@ const slides = slidesFor(post);
   <p class="slideshow__line">
     <span class="slideshow__title">{post.data.title}</span>
     <span class="slideshow__caption" data-caption-out set:html={slides[0]?.kind === 'photo' ? slides[0].caption : ''} />
+    <span class="slideshow__info" data-info-out>{slides[0]?.kind === 'photo' ? slides[0].info : ''}</span>
     <span class="slideshow__count" data-count>{slides.length ? `1 / ${slides.length}` : ''}</span>
   </p>
 </section>
@@ -73,6 +75,7 @@ const slides = slidesFor(post);
     const slides = [...track.children] as HTMLElement[];
     const captionOut = show.querySelector<HTMLElement>('[data-caption-out]')!;
     const countOut = show.querySelector<HTMLElement>('[data-count]')!;
+    const infoOut = show.querySelector<HTMLElement>('[data-info-out]')!;
     let current = 0;
 
     const show_ = (i: number, smooth = true) => {
@@ -81,6 +84,7 @@ const slides = slidesFor(post);
     };
     const update = (rememberInAddress = true) => {
       captionOut.innerHTML = slides[current]?.dataset.caption ?? '';
+      infoOut.textContent = slides[current]?.dataset.info ?? '';
       countOut.textContent = `${current + 1} / ${slides.length}`;
       // …/#3 links straight to the third photo; the first photo keeps the plain address.
       if (rememberInAddress) {

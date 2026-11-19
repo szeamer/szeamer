@@ -22,6 +22,8 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { slug } from 'github-slugger';
 import sharp from 'sharp';
+import exifr from 'exifr';
+import { execFileSync } from 'node:child_process';
 
 export const VAULT =
   process.env.SZEAMER_VAULT ??
@@ -32,6 +34,58 @@ export const REPO = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '
 export const DEST = path.join(REPO, 'src/content/vault');
 
 const IMAGE = /\.(jpe?g|png|webp|avif|gif|svg)$/i;
+/** Where the camera details of each photo are written for the site (no location). */
+const PHOTO_INFO = 'photo-info.json';
+
+/** Nikon/Canon/… brand names as written in EXIF, tidied for display. */
+function tidyCamera(make = '', model = '') {
+  const brand = make.replace(/\s+(CORPORATION|CORP\.?|COMPANY|CO\.,? ?LTD\.?|IMAGING.*|OPTICAL.*)$/i, '').trim();
+  const titled = (w) => (/^[A-Z]{2,}$/.test(w) && w.length > 3 ? w[0] + w.slice(1).toLowerCase() : w);
+  const name = model.toLowerCase().startsWith(brand.toLowerCase()) ? model : `${brand} ${model}`;
+  return name.trim().split(/\s+/).map(titled).join(' ');
+}
+
+/** "150.0-600.0 mm f/5.0-6.3" → "150–600mm" */
+function tidyLens(lens = '') {
+  const m = lens.match(/(\d+(?:\.\d+)?)(?:\s*-\s*(\d+(?:\.\d+)?))?\s*mm/i);
+  if (!m) return lens.trim() || undefined;
+  const n = (v) => String(Number(v));
+  return m[2] && Number(m[2]) !== Number(m[1]) ? `${n(m[1])}–${n(m[2])}mm` : `${n(m[1])}mm`;
+}
+
+/**
+ * Camera, lens, settings and date taken for one photo, read from the original
+ * before its metadata is stripped. Location is never read.
+ */
+async function photoInfo(file) {
+  let exif = {};
+  try {
+    exif = (await exifr.parse(file, {
+      pick: ['Make', 'Model', 'LensModel', 'FocalLength', 'FNumber', 'ExposureTime', 'ISO', 'DateTimeOriginal'],
+      reviveValues: false,
+    })) ?? {};
+  } catch {}
+  let lens = exif.LensModel;
+  if (!lens && process.platform === 'darwin') {
+    // Some cameras (e.g. Nikon) keep the lens in maker notes; macOS can read those.
+    try {
+      const v = execFileSync('mdls', ['-raw', '-name', 'kMDItemLensModel', file], { encoding: 'utf8' }).trim();
+      if (v && v !== '(null)') lens = v;
+    } catch {}
+  }
+  const date = String(exif.DateTimeOriginal ?? '').match(/^(\d{4})[:-](\d{2})[:-](\d{2})/);
+  const info = {
+    camera: exif.Model ? tidyCamera(exif.Make, exif.Model) : undefined,
+    lens: tidyLens(lens),
+    focalLength: exif.FocalLength,
+    aperture: exif.FNumber,
+    exposure: exif.ExposureTime,
+    iso: exif.ISO,
+    taken: date ? `${date[1]}-${date[2]}-${date[3]}` : undefined,
+  };
+  return Object.values(info).some((v) => v !== undefined) ? info : undefined;
+}
+
 /** Longest edge kept in the repo; Astro makes the smaller web sizes from this. */
 const MAX_EDGE = 2400;
 
@@ -239,6 +293,16 @@ export async function sync({ quiet = false } = {}) {
       out.set(rel, { copy: f });
     }
   }
+
+  // Camera details for every photo, keyed by its path in src/content/vault.
+  const info = {};
+  for (const [rel, { copy }] of [...out].sort(([a], [b]) => a.localeCompare(b))) {
+    if (copy && /\.(jpe?g|tiff?|heic|webp|png)$/i.test(copy)) {
+      const details = await photoInfo(copy);
+      if (details) info[rel] = details;
+    }
+  }
+  out.set(PHOTO_INFO, { text: `${JSON.stringify(info, null, 2)}\n` });
 
   // Write only what changed, so the dev server reloads just the affected page.
   let changed = 0;
