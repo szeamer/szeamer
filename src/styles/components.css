@@ -299,6 +299,41 @@
   padding-inline: var(--space-4);
 }
 
+/* Opening slide: what you wrote before the first photo, over that photo at 25%. */
+.slide--intro {
+  position: relative;
+  overflow: hidden;
+}
+
+.slide__backdrop {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.25;
+  pointer-events: none;
+  user-select: none;
+}
+
+.slide__intro {
+  position: relative;
+  max-width: var(--measure);
+  max-height: 100%;
+  overflow-y: auto;
+  padding: var(--space-6);
+  font-size: var(--text-base);
+  line-height: var(--leading-normal);
+}
+
+.slide__intro p {
+  margin: 0 0 1em;
+}
+
+.slide__intro p:last-child {
+  margin-bottom: 0;
+}
+
 /* The line at the bottom: title, caption and counter, with the camera details
    on a faint line underneath, aligned left with the title. Kept small and quiet so the photo does the talking. */
 .slideshow__line {

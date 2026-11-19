@@ -8,7 +8,9 @@ import type { PhotoPost } from './posts';
  */
 export type Slide =
   | { kind: 'photo'; src: ImageMetadata; caption: string; info: string }
-  | { kind: 'text'; html: string };
+  | { kind: 'text'; html: string }
+  /** Paragraphs written before the first photo, shown over a faded copy of that photo. */
+  | { kind: 'intro'; html: string; backdrop?: ImageMetadata };
 
 type PhotoInfo = {
   camera?: string;
@@ -115,6 +117,16 @@ export function slidesFor(post: PhotoPost): Slide[] {
       }
     }
     flush();
+  }
+
+  // Everything written before the first photo becomes one opening slide,
+  // with the first photo faded behind it.
+  const firstPhoto = slides.findIndex((s) => s.kind === 'photo');
+  const lead = firstPhoto === -1 ? [] : slides.slice(0, firstPhoto);
+  if (lead.length) {
+    const first = slides[firstPhoto] as Extract<Slide, { kind: 'photo' }>;
+    const html = lead.map((s) => `<p>${(s as Extract<Slide, { kind: 'text' }>).html}</p>`).join('');
+    return [{ kind: 'intro', html, backdrop: first.src }, ...slides.slice(firstPhoto)];
   }
   return slides;
 }

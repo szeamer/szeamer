@@ -45,7 +45,21 @@ const slides = slidesFor(post);
           data-caption={slide.kind === 'photo' ? slide.caption : ''}
           data-info={slide.kind === 'photo' ? slide.info : ''}
         >
-          {slide.kind === 'photo' ? (
+          {slide.kind === 'intro' ? (
+            <>
+              {slide.backdrop && (
+                <Image
+                  class="slide__backdrop"
+                  src={slide.backdrop}
+                  alt=""
+                  widths={[640, 1080, 1600, 2400]}
+                  sizes="100vw"
+                  loading="eager"
+                />
+              )}
+              <div class="slide__intro" set:html={slide.html} />
+            </>
+          ) : slide.kind === 'photo' ? (
             <Image
               class="slide__image"
               src={slide.src}
