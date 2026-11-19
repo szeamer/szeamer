@@ -29,11 +29,10 @@ const photoInfo: Record<string, PhotoInfo> =
     }),
   )[0] ?? {};
 
-/** "Nikon D700 · 150–600mm at 160mm · f/5.6 · 1/1000s · ISO 320 · 30 Aug 2026" */
+/** "Nikon D700 · 160mm · f/5.6 · 1/1000s · ISO 320 · 30 Aug 2026" (the lens name is kept in photo-info.json) */
 function formatInfo(i: PhotoInfo | undefined): string {
   if (!i) return '';
-  const focal = i.focalLength ? `${Math.round(i.focalLength)}mm` : '';
-  const lens = i.lens && focal && i.lens !== focal ? `${i.lens} at ${focal}` : i.lens || focal;
+  const lens = i.focalLength ? `${Math.round(i.focalLength)}mm` : i.lens;
   const shutter = !i.exposure
     ? ''
     : i.exposure >= 1

@@ -47,6 +47,7 @@
   --color-surface: #f3f1ec;
   --color-text: #1f1d1a;
   --color-text-muted: #6b665e;
+  --color-text-faint: #a29c92;
   --color-border: #ddd8cf;
   --color-accent: #3f6b4f;
   --color-accent-hover: #2c4d39;
@@ -63,6 +64,7 @@
     --color-surface: #1e2024;
     --color-text: #e8e6e1;
     --color-text-muted: #9a958c;
+    --color-text-faint: #6c6861;
     --color-border: #32353a;
     --color-accent: #8fc2a1;
     --color-accent-hover: #b0d8bf;

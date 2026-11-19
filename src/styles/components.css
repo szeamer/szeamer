@@ -299,17 +299,18 @@
   padding-inline: var(--space-4);
 }
 
-/* The single line at the bottom: title, caption, counter. */
+/* The single line at the bottom: title, caption, camera details, counter.
+   Kept small and quiet so the photo does the talking. */
 .slideshow__line {
   display: flex;
-  gap: var(--space-3);
+  gap: var(--space-1) var(--space-4);
   align-items: baseline;
-  margin: var(--space-4) 0 0;
-  font-size: var(--text-sm);
+  margin: var(--space-3) 0 0;
+  font-size: var(--text-xs);
+  line-height: 1.45;
 }
 
 .slideshow__title {
-  font-weight: 700;
   white-space: nowrap;
 }
 
@@ -319,17 +320,15 @@
   min-width: 0;
 }
 
-.slideshow__info {
-  color: var(--color-text-muted);
-  font-size: var(--text-xs);
+.slideshow__info,
+.slideshow__count {
+  color: var(--color-text-faint);
   white-space: nowrap;
+  font-variant-numeric: tabular-nums;
 }
 
 .slideshow__count {
   margin-left: auto;
-  color: var(--color-text-muted);
-  font-variant-numeric: tabular-nums;
-  white-space: nowrap;
 }
 
 /* Phones: less empty frame around landscape photos, caption on its own line. */
