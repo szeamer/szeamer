@@ -216,7 +216,7 @@
 /* Menu of photo posts, under the site header. */
 .photo-menu ul {
   list-style: none;
-  margin: 0 0 var(--space-6);
+  margin: 0 0 var(--space-4);
   padding: 0;
   display: flex;
   flex-wrap: wrap;
@@ -239,13 +239,23 @@
   text-underline-offset: 0.3em;
 }
 
-/* One photo per screen, with the page around it as a frame. */
+/* One photo per screen, with the page around it as a frame. The slideshow takes
+   all the height the page leaves it (see .page--fit), and the photo fits inside. */
+.slideshow {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
 .slideshow__track {
+  flex: 1;
+  min-height: 0;
   display: flex;
   overflow-x: auto;
+  overflow-y: hidden;
   scroll-snap-type: x mandatory;
   scrollbar-width: none;
-  height: min(72dvh, 52rem);
   outline: none;
 }
 
@@ -263,9 +273,12 @@
 
 .slide {
   flex: 0 0 100%;
+  height: 100%;
   margin: 0;
   scroll-snap-align: center;
   display: grid;
+  /* A fixed-size cell, so the photo's max-width/height of 100% means "the slide". */
+  grid-template: minmax(0, 1fr) / minmax(0, 1fr);
   place-items: center;
   min-width: 0;
 }
@@ -315,10 +328,6 @@
 
 /* Phones: less empty frame around landscape photos, caption on its own line. */
 @media (max-width: 40rem) {
-  .slideshow__track {
-    height: 60dvh;
-  }
-
   .slideshow__line {
     flex-wrap: wrap;
   }

@@ -14,9 +14,11 @@ interface Props {
   description?: string;
   /** Use the wider column, for gallery pages. */
   wide?: boolean;
+  /** Fit the page exactly to the browser window, with no scrolling and no footer (photo slideshows). */
+  fit?: boolean;
 }
 
-const { title, description = site.description, wide = false } = Astro.props;
+const { title, description = site.description, wide = false, fit = false } = Astro.props;
 const pageTitle = title ? `${title} · ${site.title}` : site.title;
 const shell = wide ? 'shell shell--wide' : 'shell';
 ---
@@ -38,7 +40,7 @@ const shell = wide ? 'shell shell--wide' : 'shell';
     <meta name="generator" content={Astro.generator} />
   </head>
   <body>
-    <div class="page">
+    <div class={fit ? 'page page--fit' : 'page'}>
       <a class="skip-link" href="#main">Skip to content</a>
       <Header shell={shell} />
       <main class="site-main" id="main">
@@ -46,7 +48,7 @@ const shell = wide ? 'shell shell--wide' : 'shell';
           <slot />
         </div>
       </main>
-      <Footer shell={shell} />
+      {!fit && <Footer shell={shell} />}
     </div>
   </body>
 </html>

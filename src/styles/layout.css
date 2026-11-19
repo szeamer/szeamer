@@ -95,3 +95,27 @@
   color: var(--color-text-muted);
   margin-bottom: var(--space-4);
 }
+
+/* Pages that fit the window exactly (photo slideshows): the content area takes
+   whatever height the header leaves, and nothing scrolls. */
+.page--fit {
+  height: 100dvh;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.page--fit .site-header {
+  margin-bottom: var(--space-6);
+}
+
+.page--fit .site-main,
+.page--fit .site-main > .shell {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.page--fit .site-main {
+  padding-bottom: var(--space-4);
+}
