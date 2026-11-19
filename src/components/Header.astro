@@ -1,5 +1,10 @@
 ---
 import { site, navLinks } from '../data/site';
+// The same Victorian "S" as the favicon, drawn inline so it takes the site's
+// accent colour (and dark mode) from CSS and never shows a stale cached file.
+import favicon from '../../public/favicon.svg?raw';
+
+const markPath = favicon.match(/ d="([^"]+)"/)?.[1] ?? '';
 
 interface Props {
   shell: string;
@@ -13,7 +18,9 @@ const path = Astro.url.pathname.replace(/\/$/, '') || '/';
   <div class={shell}>
     <div class="site-header__inner">
       <a class="site-header__logo" href="/" aria-label={`${site.title}, home`}>
-        <img src="/favicon.svg" alt="" width="40" height="40" />
+        <svg viewBox="0 0 64 64" width="40" height="40" aria-hidden="true">
+          <path d={markPath} />
+        </svg>
       </a>
       <nav class="site-nav" aria-label="Main">
         {

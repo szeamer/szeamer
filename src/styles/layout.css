@@ -43,9 +43,10 @@
   opacity: 0.85;
 }
 
-.site-header__logo img {
+.site-header__logo svg {
   width: 40px;
   height: 40px;
+  fill: var(--color-accent);
 }
 
 .site-nav {
