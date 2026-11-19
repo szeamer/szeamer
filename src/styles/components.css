@@ -308,11 +308,13 @@
   cursor: e-resize;
 }
 
-/* Introduction: covers the first photo at 75%, so the photo shows through at 25%.
-   Lifted up and away on the first "next". */
+/* Introduction: a see-through layer exactly over the first photo (sized and placed
+   by the script), so the photo shows through at 25%. Lifted up and away on the
+   first "next". */
 .slideshow__intro {
   position: absolute;
   inset: 0;
+  overflow: hidden;
   display: grid;
   place-items: center;
   overflow-y: auto;
@@ -342,8 +344,15 @@
   }
 }
 
+/* While the intro shows, the photos underneath can't be scrolled. */
+.slideshow__stage.is-intro-open .slideshow__track {
+  overflow-x: hidden;
+}
+
 .slideshow__intro-text {
   max-width: var(--measure);
+  max-height: 100%;
+  overflow-y: auto;
   padding: var(--space-6);
   font-size: var(--text-base);
   line-height: var(--leading-normal);
