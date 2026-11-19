@@ -88,6 +88,39 @@ function fixFrontmatter(fm, file, kind) {
   return out.replace(/\n{2,}/g, '\n').trim();
 }
 
+/** Column width of leading whitespace, with tabs at 4-column stops. */
+function indentWidth(ws) {
+  let n = 0;
+  for (const c of ws) n = c === '\t' ? n + 4 - (n % 4) : n + 1;
+  return n;
+}
+
+/**
+ * Obsidian nests lists by indenting with tabs (and is forgiving about how
+ * many). Strict markdown wants a nested item indented to exactly where its
+ * parent's text starts, or it reads the line as more text of the parent item
+ * ("- books: - The Lord of the Rings - A God in Ruins …"). Re-indent every list
+ * item to its parent's text column, keeping Obsidian's nesting.
+ */
+function normalizeListIndent(text) {
+  const stack = []; // { w: original indent, col: column where the item's text starts }
+  return text
+    .split('\n')
+    .map((line) => {
+      const m = line.match(/^([ \t]*)([-*+]|\d{1,9}[.)])[ \t]+(.*)$/);
+      if (!m) {
+        if (line.trim() && !/^[ \t]/.test(line)) stack.length = 0; // unindented text ends the list
+        return line;
+      }
+      const w = indentWidth(m[1]);
+      while (stack.length && stack.at(-1).w >= w) stack.pop();
+      const indent = stack.length ? stack.at(-1).col : 0;
+      stack.push({ w, col: indent + m[2].length + 1 });
+      return `${' '.repeat(indent)}${m[2]} ${m[3]}`;
+    })
+    .join('\n');
+}
+
 export function sync({ quiet = false } = {}) {
   const log = quiet ? () => {} : (...a) => console.log(...a);
   const warnings = [];
@@ -152,7 +185,7 @@ export function sync({ quiet = false } = {}) {
     };
 
     const convertText = (text) =>
-      text
+      normalizeListIndent(text)
         .replace(/%%[\s\S]*?%%/g, '')
         // ![[image.png|alt or 300]]
         .replace(/!\[\[([^\]|]+)(?:\|([^\]]*))?\]\]/g, (m, target, alias = '') =>

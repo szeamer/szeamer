@@ -10,12 +10,12 @@ pages: []
 I'm Silvia Zeamer. I'm a software engineer who also holds in high regard good prose, fine arts and crafts, and nice lighting. I'm based in [Boston](https://www.reddit.com/r/boston/comments/1ljg3ay/why_is_boston_the_best_city_in_the_us/), MA, but sometimes in [Stavanger](https://en.wikipedia.org/wiki/History_of_the_petroleum_industry_in_Norway), [Norway](https://www.visitnorway.com/places-to-go/fjord-norway/the-stavanger-region/). I believe deeply in the value of a vigorous liberal arts education, which I was lucky enough to receive at [Wellesley College](https://en.wikipedia.org/wiki/Wellesley_College). Having dedicated my career (or what I can presently foresee of my career) to building useful and interesting software, I distribute my free time between a perhaps inadvisably large array of contrasting activities:
 - designing and making knitwear
 - reading anything I encounter but especially literary fiction, essays, memoirs, and any large tome with 'magisterial' in the reviews on its jacket. Some of my all-time favourite books are:
-	  - The Lord of the Rings by J.R.R. Tolkien
-	  - A God in Ruins by Kate Atkinson
-	  - Anya Csak Egy Van by Vámos Miklós
-	  - The Year of Magical Thinking by Joan Didion
-	  - A Suitable Boy by Vikram Seth
-	  - Anna Karenina by Leo Tolstoy
+  - The Lord of the Rings by J.R.R. Tolkien
+  - A God in Ruins by Kate Atkinson
+  - Anya Csak Egy Van by Vámos Miklós
+  - The Year of Magical Thinking by Joan Didion
+  - A Suitable Boy by Vikram Seth
+  - Anna Karenina by Leo Tolstoy
 - learning languages. I'm native in Hungarian and English, reasonably competent in French, rusty in Mandarin Chinese, and spent one very enjoyable semester taking Russian, which I hope to pick up again someday. Presently, I'm learning Norwegian and Bengali. I built an app to help me with that. If you're interested in language-learning methodology, please reach out. It's one of my great obsessions in life. Ha tudsz magyarul, nagyon boldogan ismerkednék. Nincsenek elegen magyarok az életemben sajnos.
 - bookbinding
 - birding & bird photography

@@ -6,7 +6,8 @@
 
 :root {
   /* ---- Type ---------------------------------------------------------- */
-  --font-body: ui-serif, Georgia, 'Iowan Old Style', 'Times New Roman', serif;
+  /* Typewriter face; loaded in src/layouts/Base.astro. */
+  --font-body: 'Courier Prime', 'Courier New', Courier, monospace;
   --font-heading: var(--font-body);
   --font-mono: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
 

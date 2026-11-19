@@ -15,9 +15,10 @@
     "publish": "node scripts/obsidian-watch.mjs --once"
   },
   "dependencies": {
+    "@fontsource/courier-prime": "^5.3.0",
     "astro": "^7.3.3",
-    "js-yaml": "^4.1.0",
-    "github-slugger": "^2.0.0"
+    "github-slugger": "^2.0.0",
+    "js-yaml": "^4.1.0"
   },
   "allowScripts": {
     "esbuild": true,
