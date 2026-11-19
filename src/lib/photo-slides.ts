@@ -56,7 +56,9 @@ const images = import.meta.glob<{ default: ImageMetadata }>(
   { eager: true },
 );
 
-const IMAGE_LINE = /^!\[([^\]]*)\]\(<?([^)>]+)>?\)\s*$/;
+/** An embedded image, wherever it is in a line ("…caption![](<photo.jpg>)" happens when pasting). */
+const IMAGE = /!\[([^\]]*)\]\(<?([^)>]+)>?\)/;
+const IMAGE_SPLIT = /(!\[[^\]]*\]\(<?[^)>]+>?\))/;
 
 /** Resolves an image path written relative to the post's own file. */
 function resolve(post: PhotoPost, target: string): { src: ImageMetadata; key: string } | undefined {
@@ -98,15 +100,18 @@ export function slidesFor(post: PhotoPost): Slide[] {
       text = [];
     };
     for (const line of block.split(/\r?\n/)) {
-      const m = line.trim().match(IMAGE_LINE);
-      if (m) {
-        flush();
-        const found = resolve(post, m[2]);
-        if (found) photo = { ...found, caption: [], alt: m[1] };
-      } else if (photo) {
-        if (line.trim()) photo.caption.push(line.trim());
-      } else {
-        text.push(line.trim());
+      // Each image starts a new slide; text before it belongs to the previous photo.
+      for (const part of line.split(IMAGE_SPLIT)) {
+        const m = part.match(IMAGE);
+        if (m) {
+          flush();
+          const found = resolve(post, m[2]);
+          if (found) photo = { ...found, caption: [], alt: m[1] };
+        } else if (photo) {
+          if (part.trim()) photo.caption.push(part.trim());
+        } else if (part.trim()) {
+          text.push(part.trim());
+        }
       }
     }
     flush();
