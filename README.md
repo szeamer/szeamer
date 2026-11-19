@@ -104,8 +104,10 @@ heather in stavanger
 Photo posts live in `Photos/` and show as a slideshow: one photo per screen, click
 the right/left half (or use the arrow keys, or swipe) to move, with one line under it
 for the post title, the photo's caption and a counter. Paragraphs written before
-the first photo become one opening slide, shown over that photo at 25% opacity
-(with nothing written there, the post's `description` property is used).
+the first photo (or, with nothing written there, the post's `description`) open
+the post as an overlay in front of the first photo, which shows through at 25%
+with its caption line already visible. The first "next" lifts the overlay away;
+going back from the first photo brings it down again.
 Paragraphs elsewhere become plain text slides. A menu of all photo posts sits above. `/photos` opens the newest
 post, and `…/post-name/#3` links to its third photo. This is the site's only
 JavaScript (`src/components/PhotoSlideshow.astro`); without it the slides scroll sideways.

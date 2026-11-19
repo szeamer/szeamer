@@ -1,13 +1,20 @@
 ---
 /**
  * A photo post as a slideshow: one photo per screen, click the right/left half
- * (or use the arrow keys, or swipe) to move, with a single line underneath for
- * the post title, the photo's caption, its camera details and a counter. Above it, a menu of all
- * photo posts. Without JavaScript the slides still scroll sideways.
+ * (or use the arrow keys, or swipe) to move, with a line underneath for the post
+ * title, the photo's caption, its camera details and a counter. Above it, a menu
+ * of all photo posts.
+ *
+ * If the post has an introduction (text above the first photo, or its
+ * description), it opens as an overlay in front of the first photo, with that
+ * photo's line already showing underneath. The first "next" lifts the overlay
+ * away; going back from the first photo brings it down again.
+ *
+ * Without JavaScript the slides still scroll sideways (and the intro isn't shown).
  */
 import { Image } from 'astro:assets';
 import type { PhotoPost } from '../lib/posts';
-import { slidesFor } from '../lib/photo-slides';
+import { introFor, slidesFor } from '../lib/photo-slides';
 
 interface Props {
   post: PhotoPost;
@@ -16,6 +23,7 @@ interface Props {
 
 const { post, posts } = Astro.props;
 const slides = slidesFor(post);
+const intro = introFor(post);
 ---
 
 <nav class="photo-menu" aria-label="Photo posts">
@@ -34,45 +42,40 @@ const slides = slidesFor(post);
 </nav>
 
 <section class="slideshow" aria-roledescription="carousel" aria-label={post.data.title} data-slideshow>
-  <div class="slideshow__track" data-track tabindex="0">
+  <div class="slideshow__stage" data-stage>
+    <div class="slideshow__track" data-track tabindex="0">
+      {
+        slides.map((slide, i) => (
+          <figure
+            class={`slide slide--${slide.kind}`}
+            id={`slide-${i + 1}`}
+            aria-roledescription="slide"
+            aria-label={`${i + 1} of ${slides.length}`}
+            data-caption={slide.kind === 'photo' ? slide.caption : ''}
+            data-info={slide.kind === 'photo' ? slide.info : ''}
+          >
+            {slide.kind === 'photo' ? (
+              <Image
+                class="slide__image"
+                src={slide.src}
+                alt={slide.caption.replace(/<[^>]+>/g, '') || post.data.title}
+                widths={[640, 1080, 1600, 2400]}
+                sizes="90vw"
+                loading={i < 2 ? 'eager' : 'lazy'}
+              />
+            ) : (
+              <p class="slide__text" set:html={slide.html} />
+            )}
+          </figure>
+        ))
+      }
+    </div>
     {
-      slides.map((slide, i) => (
-        <figure
-          class={`slide slide--${slide.kind}`}
-          id={`slide-${i + 1}`}
-          aria-roledescription="slide"
-          aria-label={`${i + 1} of ${slides.length}`}
-          data-caption={slide.kind === 'photo' ? slide.caption : ''}
-          data-info={slide.kind === 'photo' ? slide.info : ''}
-        >
-          {slide.kind === 'intro' ? (
-            <>
-              {slide.backdrop && (
-                <Image
-                  class="slide__backdrop"
-                  src={slide.backdrop}
-                  alt=""
-                  widths={[640, 1080, 1600, 2400]}
-                  sizes="100vw"
-                  loading="eager"
-                />
-              )}
-              <div class="slide__intro" set:html={slide.html} />
-            </>
-          ) : slide.kind === 'photo' ? (
-            <Image
-              class="slide__image"
-              src={slide.src}
-              alt={slide.caption.replace(/<[^>]+>/g, '') || post.data.title}
-              widths={[640, 1080, 1600, 2400]}
-              sizes="90vw"
-              loading={i < 2 ? 'eager' : 'lazy'}
-            />
-          ) : (
-            <p class="slide__text" set:html={slide.html} />
-          )}
-        </figure>
-      ))
+      intro && (
+        <div class="slideshow__intro" data-intro aria-hidden="true">
+          <div class="slideshow__intro-text" set:html={intro} />
+        </div>
+      )
     }
   </div>
   <p class="slideshow__line">
@@ -85,7 +88,9 @@ const slides = slidesFor(post);
 
 <script>
   for (const show of document.querySelectorAll<HTMLElement>('[data-slideshow]')) {
+    const stage = show.querySelector<HTMLElement>('[data-stage]')!;
     const track = show.querySelector<HTMLElement>('[data-track]')!;
+    const intro = show.querySelector<HTMLElement>('[data-intro]');
     const slides = [...track.children] as HTMLElement[];
     const captionOut = show.querySelector<HTMLElement>('[data-caption-out]')!;
     const countOut = show.querySelector<HTMLElement>('[data-count]')!;
@@ -107,11 +112,29 @@ const slides = slidesFor(post);
       }
     };
 
-    // Start on the photo named in the address (…/#3), if any.
+    // The introduction overlay, in front of the first photo.
+    let introOpen = false;
+    const setIntro = (open: boolean) => {
+      if (!intro) return;
+      introOpen = open;
+      intro.classList.toggle('is-open', open);
+      intro.setAttribute('aria-hidden', String(!open));
+    };
+
+    /** One step forward (+1) or back (-1): the intro counts as a step before photo 1. */
+    const step = (delta: number) => {
+      if (introOpen && delta > 0) return setIntro(false);
+      if (intro && !introOpen && current === 0 && delta < 0) return setIntro(true);
+      if (!introOpen) show_(current + delta);
+    };
+
+    // Start on the photo named in the address (…/#3), or on the intro if there is one.
     const start = Number(location.hash.slice(1)) - 1;
     if (start > 0) {
       current = Math.min(start, slides.length - 1);
       requestAnimationFrame(() => show_(current, false));
+    } else {
+      setIntro(true);
     }
     update(false);
 
@@ -129,21 +152,36 @@ const slides = slidesFor(post);
       }, 80);
     });
 
-    // Right half: next. Left half: previous. Links inside text slides still work.
-    track.addEventListener('click', (e) => {
+    // Right half: next. Left half: previous. Links (in text or the intro) still work.
+    const side = (x: number) => {
+      const { left, width } = stage.getBoundingClientRect();
+      return x - left > width / 2 ? 1 : -1;
+    };
+    stage.addEventListener('click', (e) => {
       if ((e.target as HTMLElement).closest('a')) return;
-      const { left, width } = track.getBoundingClientRect();
-      show_(current + ((e as MouseEvent).clientX - left > width / 2 ? 1 : -1));
+      step(introOpen ? 1 : side(e.clientX));
     });
-    track.addEventListener('mousemove', (e) => {
-      const { left, width } = track.getBoundingClientRect();
-      track.dataset.side = e.clientX - left > width / 2 ? 'next' : 'prev';
+    stage.addEventListener('mousemove', (e) => {
+      stage.dataset.side = introOpen || side(e.clientX) > 0 ? 'next' : 'prev';
+    });
+
+    // On the intro, a swipe in any direction lifts it away.
+    let touch: { x: number; y: number } | null = null;
+    intro?.addEventListener('touchstart', (e) => {
+      touch = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+    }, { passive: true });
+    intro?.addEventListener('touchend', (e) => {
+      if (!touch) return;
+      const dx = e.changedTouches[0].clientX - touch.x;
+      const dy = e.changedTouches[0].clientY - touch.y;
+      touch = null;
+      if (Math.abs(dx) > 40 || Math.abs(dy) > 40) step(1);
     });
 
     document.addEventListener('keydown', (e) => {
       if (e.target instanceof HTMLInputElement || e.metaKey || e.ctrlKey || e.altKey) return;
-      if (e.key === 'ArrowRight') show_(current + 1);
-      else if (e.key === 'ArrowLeft') show_(current - 1);
+      if (e.key === 'ArrowRight') step(1);
+      else if (e.key === 'ArrowLeft') step(-1);
       else return;
       e.preventDefault();
     });

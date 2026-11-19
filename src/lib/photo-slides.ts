@@ -8,9 +8,7 @@ import type { PhotoPost } from './posts';
  */
 export type Slide =
   | { kind: 'photo'; src: ImageMetadata; caption: string; info: string }
-  | { kind: 'text'; html: string }
-  /** Paragraphs written before the first photo, shown over a faded copy of that photo. */
-  | { kind: 'intro'; html: string; backdrop?: ImageMetadata };
+  | { kind: 'text'; html: string };
 
 type PhotoInfo = {
   camera?: string;
@@ -85,7 +83,8 @@ export function inline(text: string): string {
     .replace(/`([^`]+)`/g, '<code>$1</code>');
 }
 
-export function slidesFor(post: PhotoPost): Slide[] {
+/** Every photo and paragraph in the post, in order. */
+function rawSlides(post: PhotoPost): Slide[] {
   const slides: Slide[] = [];
   for (const block of (post.body ?? '').split(/\r?\n\s*\r?\n/)) {
     let text: string[] = [];
@@ -119,16 +118,26 @@ export function slidesFor(post: PhotoPost): Slide[] {
     flush();
   }
 
-  // Everything written before the first photo becomes one opening slide, with
-  // the first photo faded behind it. With nothing written there, the post's
-  // `description` property is used instead.
+  return slides;
+}
+
+/** The slides: every photo and later paragraph. Text above the first photo is the intro (see introFor). */
+export function slidesFor(post: PhotoPost): Slide[] {
+  const slides = rawSlides(post);
   const firstPhoto = slides.findIndex((s) => s.kind === 'photo');
-  if (firstPhoto === -1) return slides;
-  const first = slides[firstPhoto] as Extract<Slide, { kind: 'photo' }>;
-  const lead = slides.slice(0, firstPhoto).map((s) => (s as Extract<Slide, { kind: 'text' }>).html);
+  return firstPhoto > 0 ? slides.slice(firstPhoto) : slides;
+}
+
+/**
+ * The introduction shown over the first photo: paragraphs written above the
+ * first photo, or failing that the post's `description` property.
+ */
+export function introFor(post: PhotoPost): string | undefined {
+  const parsed = rawSlides(post);
+  const firstPhoto = parsed.findIndex((s) => s.kind === 'photo');
+  if (firstPhoto === -1) return undefined;
+  const lead = parsed.slice(0, firstPhoto).map((s) => (s as Extract<Slide, { kind: 'text' }>).html);
   const description = post.data.description?.trim();
   if (!lead.length && description) lead.push(inline(description));
-  if (!lead.length) return slides;
-  const html = lead.map((p) => `<p>${p}</p>`).join('');
-  return [{ kind: 'intro', html, backdrop: first.src }, ...slides.slice(firstPhoto)];
+  return lead.length ? lead.map((p) => `<p>${p}</p>`).join('') : undefined;
 }
