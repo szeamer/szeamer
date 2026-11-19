@@ -12,7 +12,9 @@ const path = Astro.url.pathname.replace(/\/$/, '') || '/';
 <header class="site-header">
   <div class={shell}>
     <div class="site-header__inner">
-      <p class="site-header__title"><a href="/">{site.title}</a></p>
+      <a class="site-header__logo" href="/" aria-label={`${site.title}, home`}>
+        <img src="/favicon.svg" alt="" width="32" height="32" />
+      </a>
       <nav class="site-nav" aria-label="Main">
         {
           navLinks.map((link) => (

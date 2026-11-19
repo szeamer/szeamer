@@ -28,19 +28,24 @@
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-3) var(--space-6);
-  align-items: baseline;
+  align-items: center;
   justify-content: space-between;
 }
 
-.site-header__title {
-  margin: 0;
-  font-size: var(--text-lg);
-  font-weight: 600;
+/* The "s" icon in the header, linking home (same image as the favicon). */
+.site-header__logo {
+  display: block;
+  line-height: 0;
+  transition: opacity var(--transition);
 }
 
-.site-header__title a {
-  color: inherit;
-  text-decoration: none;
+.site-header__logo:hover {
+  opacity: 0.85;
+}
+
+.site-header__logo img {
+  width: 32px;
+  height: 32px;
 }
 
 .site-nav {
