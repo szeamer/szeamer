@@ -21,23 +21,6 @@ export async function getPhotoPosts(): Promise<PhotoPost[]> {
   return posts.sort(newestFirst);
 }
 
-const images = import.meta.glob<{ default: ImageMetadata }>(
-  '../content/vault/{Photos,attachments}/**/*.{jpg,jpeg,png,webp,avif,gif,JPG,JPEG,PNG}',
-  { eager: true },
-);
-
-/** The first photo in a post, for its tile on /photos. */
-export function coverImage(post: PhotoPost): ImageMetadata | undefined {
-  const m = post.body?.match(/!\[[^\]]*\]\(<?([^)>]+)>?\)/);
-  if (!m || !post.filePath) return undefined;
-  const parts = post.filePath.replace(/^.*?src\/content\/vault\//, '').split('/').slice(0, -1);
-  for (const seg of decodeURI(m[1]).split('/')) {
-    if (seg === '..') parts.pop();
-    else if (seg !== '.' && seg) parts.push(seg);
-  }
-  return images[`../content/vault/${parts.join('/')}`]?.default;
-}
-
 export function formatDate(date: Date): string {
   return date.toLocaleDateString('en-US', {
     year: 'numeric',

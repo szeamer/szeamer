@@ -211,41 +211,120 @@
   margin-bottom: var(--space-2);
 }
 
-/* ---- Photo posts ------------------------------------------------------ */
+/* ---- Photo posts (slideshow) ----------------------------------------- */
 
-.photo-tile {
-  color: inherit;
+/* Menu of photo posts, under the site header. */
+.photo-menu ul {
+  list-style: none;
+  margin: 0 0 var(--space-6);
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-6);
+  font-size: var(--text-sm);
+}
+
+.photo-menu a {
+  color: var(--color-text-muted);
   text-decoration: none;
 }
 
-.photo-tile:hover .gallery__title {
-  color: var(--color-accent);
+.photo-menu a:hover,
+.photo-menu a[aria-current='page'] {
+  color: var(--color-text);
 }
 
-.photo-tile__image {
-  aspect-ratio: 4 / 3;
-  object-fit: cover;
+.photo-menu a[aria-current='page'] {
+  text-decoration: underline;
+  text-underline-offset: 0.3em;
 }
 
-.photo-tile__image--empty {
-  display: block;
+/* One photo per screen, with the page around it as a frame. */
+.slideshow__track {
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  height: min(72dvh, 52rem);
+  outline: none;
 }
 
-/* Photo posts use the wide column for photos; text stays at reading width. */
-.photo-post__header,
-.photo-post__back,
-.photo-post__body > * {
-  max-width: var(--measure);
-  margin-inline: auto;
+.slideshow__track::-webkit-scrollbar {
+  display: none;
 }
 
-.photo-post__body > p:has(> img) {
-  max-width: none;
-  text-align: center;
+.slideshow__track[data-side='prev'] {
+  cursor: w-resize;
 }
 
-.photo-post__body > p:has(> img) img {
-  margin-inline: auto;
-  max-height: 85vh;
+.slideshow__track[data-side='next'] {
+  cursor: e-resize;
+}
+
+.slide {
+  flex: 0 0 100%;
+  margin: 0;
+  scroll-snap-align: center;
+  display: grid;
+  place-items: center;
+  min-width: 0;
+}
+
+.slide__image {
+  max-width: 100%;
+  max-height: 100%;
   width: auto;
+  height: auto;
+  object-fit: contain;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+.slide__text {
+  max-width: var(--measure);
+  margin: 0;
+  padding-inline: var(--space-4);
+}
+
+/* The single line at the bottom: title, caption, counter. */
+.slideshow__line {
+  display: flex;
+  gap: var(--space-3);
+  align-items: baseline;
+  margin: var(--space-4) 0 0;
+  font-size: var(--text-sm);
+}
+
+.slideshow__title {
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.slideshow__caption {
+  color: var(--color-text-muted);
+  flex: 1;
+  min-width: 0;
+}
+
+.slideshow__count {
+  margin-left: auto;
+  color: var(--color-text-muted);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+/* Phones: less empty frame around landscape photos, caption on its own line. */
+@media (max-width: 40rem) {
+  .slideshow__track {
+    height: 60dvh;
+  }
+
+  .slideshow__line {
+    flex-wrap: wrap;
+  }
+
+  .slideshow__caption {
+    order: 3;
+    flex-basis: 100%;
+  }
 }

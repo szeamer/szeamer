@@ -101,9 +101,12 @@ on the line directly underneath (no blank line):
 heather in stavanger
 ```
 
-Photo posts live in `Photos/`. `/photos` shows them as a grid, newest first, using
-each post's first photo as its cover. A photo post's page shows photos wide and
-text at reading width.
+Photo posts live in `Photos/` and show as a slideshow: one photo per screen, click
+the right/left half (or use the arrow keys, or swipe) to move, with one line under it
+for the post title, the photo's caption and a counter. Other paragraphs in the note
+become text slides. A menu of all photo posts sits above. `/photos` opens the newest
+post, and `…/post-name/#3` links to its third photo. This is the site's only
+JavaScript (`src/components/PhotoSlideshow.astro`); without it the slides scroll sideways.
 
 On sync, every photo is shrunk to 2400px on its longest edge and stripped of
 metadata (camera details, GPS location) before it reaches the repo, which is public.
