@@ -32,7 +32,7 @@
   justify-content: space-between;
 }
 
-/* The "s" icon in the header, linking home (same image as the favicon). */
+/* The Victorian "S" in the header, linking home (same image as the favicon). */
 .site-header__logo {
   display: block;
   line-height: 0;
@@ -44,8 +44,8 @@
 }
 
 .site-header__logo img {
-  width: 32px;
-  height: 32px;
+  width: 40px;
+  height: 40px;
 }
 
 .site-nav {
