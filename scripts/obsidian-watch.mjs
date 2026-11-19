@@ -69,11 +69,11 @@ let timer = null;
 let busy = false;
 let again = false;
 
-function cycle() {
+async function cycle() {
   if (busy) return void (again = true);
   busy = true;
   try {
-    const { changed } = sync({ quiet: false });
+    const { changed } = await sync({ quiet: false });
     if (!preview && (changed || once)) publish();
   } catch (e) {
     log(`Sync failed: ${e.message}`);
@@ -94,7 +94,7 @@ function schedule() {
 }
 
 if (once) {
-  cycle();
+  await cycle();
 } else {
   if (!fs.existsSync(SRC)) {
     console.error(`Website folder not found: ${SRC}`);

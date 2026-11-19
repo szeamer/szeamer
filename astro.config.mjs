@@ -33,6 +33,10 @@ export default defineConfig({
   integrations: [hiddenSections()],
   // Used for absolute URLs in /rss.xml. GitHub Pages serves the site here.
   site: 'https://szeamer.art',
+  image: {
+    // Serve photos in several sizes so phones don't download desktop-sized files.
+    layout: 'constrained',
+  },
   markdown: {
     shikiConfig: {
       themes: { light: 'github-light', dark: 'github-dark' },

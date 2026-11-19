@@ -12,14 +12,23 @@ const VAULT = './src/content/vault';
 const optional = <T extends z.ZodTypeAny>(schema: T) =>
   z.preprocess((v) => (v === null || v === '' ? undefined : v), schema.optional());
 
+/** Posts and photo posts share the same properties. */
+const postSchema = z.object({
+  title: z.string(),
+  date: z.coerce.date(),
+  description: optional(z.string()),
+  draft: z.preprocess((v) => v ?? false, z.boolean()),
+});
+
 const blog = defineCollection({
   loader: glob({ base: `${VAULT}/Blog`, pattern: '**/*.md' }),
-  schema: z.object({
-    title: z.string(),
-    date: z.coerce.date(),
-    description: optional(z.string()),
-    draft: z.preprocess((v) => v ?? false, z.boolean()),
-  }),
+  schema: postSchema,
+});
+
+/** Photo posts: notes in the Photos folder, with photos embedded in the text. */
+const photos = defineCollection({
+  loader: glob({ base: `${VAULT}/Photos`, pattern: '**/*.md' }),
+  schema: postSchema,
 });
 
 const projects = defineCollection({
@@ -39,4 +48,4 @@ const pages = defineCollection({
   schema: z.object({}).passthrough(),
 });
 
-export const collections = { blog, projects, pages };
+export const collections = { blog, photos, projects, pages };

@@ -197,3 +197,55 @@
   margin-top: var(--space-12);
   font-size: var(--text-sm);
 }
+
+/* ---- Photo captions --------------------------------------------------- */
+/* In Obsidian, a line of text directly under a photo is its caption. */
+
+.prose p:has(> img) {
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+}
+
+.prose p:has(> img) img {
+  display: block;
+  margin-bottom: var(--space-2);
+}
+
+/* ---- Photo posts ------------------------------------------------------ */
+
+.photo-tile {
+  color: inherit;
+  text-decoration: none;
+}
+
+.photo-tile:hover .gallery__title {
+  color: var(--color-accent);
+}
+
+.photo-tile__image {
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+}
+
+.photo-tile__image--empty {
+  display: block;
+}
+
+/* Photo posts use the wide column for photos; text stays at reading width. */
+.photo-post__header,
+.photo-post__back,
+.photo-post__body > * {
+  max-width: var(--measure);
+  margin-inline: auto;
+}
+
+.photo-post__body > p:has(> img) {
+  max-width: none;
+  text-align: center;
+}
+
+.photo-post__body > p:has(> img) img {
+  margin-inline: auto;
+  max-height: 85vh;
+  width: auto;
+}

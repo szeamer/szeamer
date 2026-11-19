@@ -21,6 +21,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { slug } from 'github-slugger';
+import sharp from 'sharp';
 
 export const VAULT =
   process.env.SZEAMER_VAULT ??
@@ -31,6 +32,22 @@ export const REPO = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '
 export const DEST = path.join(REPO, 'src/content/vault');
 
 const IMAGE = /\.(jpe?g|png|webp|avif|gif|svg)$/i;
+/** Longest edge kept in the repo; Astro makes the smaller web sizes from this. */
+const MAX_EDGE = 2400;
+
+/**
+ * Copies a photo into the site, shrunk to MAX_EDGE and with its metadata
+ * (camera details, GPS location) stripped, since the repo is public.
+ */
+async function copyImage(src, dest) {
+  const ext = path.extname(src).toLowerCase();
+  if (!['.jpg', '.jpeg', '.png', '.webp'].includes(ext)) return fs.copyFileSync(src, dest);
+  let img = sharp(src).rotate().resize(MAX_EDGE, MAX_EDGE, { fit: 'inside', withoutEnlargement: true });
+  if (ext === '.png') img = img.png();
+  else if (ext === '.webp') img = img.webp({ quality: 88 });
+  else img = img.jpeg({ quality: 88, mozjpeg: true });
+  await img.toFile(dest);
+}
 const ATTACHMENTS = 'attachments';
 /** Top-level notes that map to site pages, for [[wikilinks]]. */
 const PAGE_URLS = { home: '/', projects: '/projects', art: '/art', photos: '/photos' };
@@ -121,7 +138,7 @@ function normalizeListIndent(text) {
     .join('\n');
 }
 
-export function sync({ quiet = false } = {}) {
+export async function sync({ quiet = false } = {}) {
   const log = quiet ? () => {} : (...a) => console.log(...a);
   const warnings = [];
   if (!fs.existsSync(SRC)) throw new Error(`Website folder not found: ${SRC}`);
@@ -143,6 +160,7 @@ export function sync({ quiet = false } = {}) {
     const rel = posix(path.relative(SRC, f));
     const key = stem(f).toLowerCase();
     if (rel.startsWith('Blog/')) noteUrl.set(key, `/blog/${slug(stem(f))}/`);
+    else if (rel.startsWith('Photos/')) noteUrl.set(key, `/photos/${slug(stem(f))}/`);
     else if (rel.startsWith('Projects/')) noteUrl.set(key, '/projects');
     else if (PAGE_URLS[key]) noteUrl.set(key, PAGE_URLS[key]);
   }
@@ -212,7 +230,7 @@ export function sync({ quiet = false } = {}) {
   for (const f of srcFiles) {
     const rel = posix(path.relative(SRC, f));
     if (f.endsWith('.md')) {
-      const kind = rel.startsWith('Blog/') ? 'post' : rel.startsWith('Projects/') ? 'project' : 'page';
+      const kind = /^(Blog|Photos)\//.test(rel) ? 'post' : rel.startsWith('Projects/') ? 'project' : 'page';
       const { fm, body } = splitFrontmatter(fs.readFileSync(f, 'utf8'));
       const newFm = fixFrontmatter(fm, f, kind);
       const converted = convert(body, rel);
@@ -232,12 +250,10 @@ export function sync({ quiet = false } = {}) {
       fs.writeFileSync(dest, data);
     } else {
       const s = fs.statSync(src);
-      if (fs.existsSync(dest)) {
-        const d = fs.statSync(dest);
-        if (d.size === s.size && Math.abs(d.mtimeMs - s.mtimeMs) < 1000) continue;
-      }
+      // The copy is resized, so compare modification times only (the copy keeps the original's).
+      if (fs.existsSync(dest) && Math.abs(fs.statSync(dest).mtimeMs - s.mtimeMs) < 1000) continue;
       fs.mkdirSync(path.dirname(dest), { recursive: true });
-      fs.copyFileSync(src, dest);
+      await copyImage(src, dest);
       fs.utimesSync(dest, s.atime, s.mtime);
     }
     changed++;
@@ -258,7 +274,7 @@ export function sync({ quiet = false } = {}) {
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
   try {
-    sync();
+    await sync();
   } catch (e) {
     console.error(e.message);
     process.exit(1);

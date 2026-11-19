@@ -1,14 +1,50 @@
 ---
+import { Image } from 'astro:assets';
 import Base from '../layouts/Base.astro';
-import Gallery from '../components/Gallery.astro';
-import { photos } from '../data/photos';
+import { coverImage, formatDate, getPhotoPosts } from '../lib/posts';
+
+// One tile per photo post (notes in the Photos folder in Obsidian), newest first.
+const posts = (await getPhotoPosts()).map((post) => ({ post, cover: coverImage(post) }));
 ---
 
 <Base title="Photos" description="Mostly birds and other wildlife." wide>
   <h1 class="page-title">Photos</h1>
   <p class="page-intro">Mostly birds and other wildlife.</p>
-  <Gallery
-    items={photos}
-    emptyMessage="No photos yet — add images to the Photos folder in Obsidian and they will appear here."
-  />
+  {
+    posts.length === 0 ? (
+      <div class="empty-state">
+        <p>No photos yet. Add a note to the Photos folder in Obsidian and embed some photos in it.</p>
+      </div>
+    ) : (
+      <ul class="gallery">
+        {posts.map(({ post, cover }) => (
+          <li>
+            <a class="photo-tile" href={`/photos/${post.id}/`}>
+              <figure class="gallery__figure">
+                {cover ? (
+                  <Image
+                    class="gallery__image photo-tile__image"
+                    src={cover}
+                    alt=""
+                    width={640}
+                    height={480}
+                    fit="cover"
+                    densities={[1, 2]}
+                    loading="lazy"
+                  />
+                ) : (
+                  <div class="gallery__image photo-tile__image photo-tile__image--empty" />
+                )}
+                <figcaption class="gallery__caption">
+                  <span class="gallery__title">{post.data.title}</span>
+                  {post.data.draft && <span class="timeline__draft">draft</span>}
+                  <span class="gallery__note">{formatDate(post.data.date)}</span>
+                </figcaption>
+              </figure>
+            </a>
+          </li>
+        ))}
+      </ul>
+    )
+  }
 </Base>

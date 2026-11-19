@@ -41,11 +41,7 @@ Also useful in Magit: `TAB` expands a diff, `u` unstages, `g` refreshes, `q` qui
 
 ### Adding images
 
-Shrink exports before you add them so the repo stays small (Astro makes the web sizes itself):
-
-```sh
-sips -Z 2400 ~/Library/Mobile\ Documents/iCloud~md~obsidian/Documents/szeamer/Photos/*.jpg
-```
+No need to shrink photos first: the sync does it (see Photos below).
 
 Run shell commands with `M-!` (or `M-&` to run them asynchronously). In dired, `C` copies files,
 `R` renames or moves them, `+` creates a directory, and `D` deletes.
@@ -77,11 +73,104 @@ hand, because the next sync overwrites it.
 | About-me text on the front page | Body of `Home.md` |
 | Blog posts | One note per post in `Blog/` |
 | Projects | One note per project in `Projects/` (properties `link`, `meta`, `order`) |
-| Art / photos | Images in `Art/` / `Photos/`; titles and captions in `Art.md` / `Photos.md` |
+| Photo posts | One note per post in `Photos/`, photos embedded in the text (same properties as blog posts) |
+| Art | Images in `Art/`; titles and captions in `Art.md` |
 | Which sections exist | `pages` property of `Home.md`: any of `Writing`, `Art`, `Projects`, `Photos`. Empty = landing page only; unlisted sections aren't linked or built |
 | Header/front-page link labels and blurbs | `navLinks` in `src/data/site.ts` (code, not Obsidian) |
 
-Templates `website post` and `website project` are in the vault's `templates` folder.
+Templates `website post`, `website photo post` and `website project` are in the vault's `templates` folder.
+
+### Posts
+
+The note name is the title and the URL: `First frost` → `/blog/first-frost/`.
+Properties: `date` (required to publish), `description` (optional, for RSS), and
+`draft` (checked = hidden on the live site). A post with no `date` stays a draft.
+
+Obsidian syntax is converted for you: pasted/embedded images (`![[photo.jpg]]`) work
+wherever Obsidian saved them; `[[Another post]]` becomes a link; links to notes outside
+the website folder become plain text; `%% comments %%` are removed. Embedding a whole
+note (`![[Some note]]`) isn't supported.
+
+### Photos
+
+Photos go in posts. In any post or photo post, embed a photo and put its caption
+on the line directly underneath (no blank line):
+
+```
+![[DSC_8760.jpg]]
+heather in stavanger
+```
+
+Photo posts live in `Photos/`. `/photos` shows them as a grid, newest first, using
+each post's first photo as its cover. A photo post's page shows photos wide and
+text at reading width.
+
+On sync, every photo is shrunk to 2400px on its longest edge and stripped of
+metadata (camera details, GPS location) before it reaches the repo, which is public.
+Astro then makes the smaller sizes for phones.
+
+### Art
+
+Anything in `Art/` shows up. To set a title, year, caption or order, embed
+the image in `Art.md` like this (blank line between pieces):
+
+```
+![[2026-04-great-egret.jpg]]
+Great Egret (2026)
+Parker River NWR, April.
+```
+
+Listed images come first, in that order; the rest follow, titled from their filename.
+
+### Publishing a change (Magit)
+
+1. `C-x g`: open Magit status
+2. `s` on a file stages it, or `S` stages everything
+3. `c c`: start a commit, type the message, then `C-c C-c` to finish (or `C-c C-k` to cancel)
+4. `P p`: push. The host rebuilds the site automatically
+
+Also useful in Magit: `TAB` expands a diff, `u` unstages, `g` refreshes, `q` quits.
+
+### Adding images
+
+No need to shrink photos first: the sync does it (see Photos below).
+
+Run shell commands with `M-!` (or `M-&` to run them asynchronously). In dired, `C` copies files,
+`R` renames or moves them, `+` creates a directory, and `D` deletes.
+
+### Emacs keys to remember
+
+| Keys | Action |
+| --- | --- |
+| `C-g` | Cancel whatever is happening |
+| `C-x C-f` / `C-x C-s` | Open file / save |
+| `C-x b` / `C-x k` | Switch buffer / close buffer |
+| `C-/` | Undo |
+| `C-s` | Search forward |
+| `M-q` | Re-wrap the current paragraph |
+| `C-c C-l` | Insert a link (markdown) |
+| `C-c C-s b` / `C-c C-s i` | Bold / italic (markdown) |
+| `C-h k` then a key | Explain what that key does |
+
+## Editing content (in Obsidian)
+
+All content lives in the **`szeamer` folder of the Obsidian vault**
+(`~/Library/Mobile Documents/iCloud~md~obsidian/Documents/szeamer`). The site reads a
+copy of it in `src/content/vault/`, made by `npm run sync`. Never edit that copy by
+hand, because the next sync overwrites it.
+
+| What | Where in Obsidian |
+| --- | --- |
+| Name, tagline, description, social links | Properties of `Home.md` |
+| About-me text on the front page | Body of `Home.md` |
+| Blog posts | One note per post in `Blog/` |
+| Projects | One note per project in `Projects/` (properties `link`, `meta`, `order`) |
+| Photo posts | One note per post in `Photos/`, photos embedded in the text (same properties as blog posts) |
+| Art | Images in `Art/`; titles and captions in `Art.md` |
+| Which sections exist | `pages` property of `Home.md`: any of `Writing`, `Art`, `Projects`, `Photos`. Empty = landing page only; unlisted sections aren't linked or built |
+| Header/front-page link labels and blurbs | `navLinks` in `src/data/site.ts` (code, not Obsidian) |
+
+Templates `website post`, `website photo post` and `website project` are in the vault's `templates` folder.
 
 ### Posts
 
