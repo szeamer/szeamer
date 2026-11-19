@@ -119,14 +119,16 @@ export function slidesFor(post: PhotoPost): Slide[] {
     flush();
   }
 
-  // Everything written before the first photo becomes one opening slide,
-  // with the first photo faded behind it.
+  // Everything written before the first photo becomes one opening slide, with
+  // the first photo faded behind it. With nothing written there, the post's
+  // `description` property is used instead.
   const firstPhoto = slides.findIndex((s) => s.kind === 'photo');
-  const lead = firstPhoto === -1 ? [] : slides.slice(0, firstPhoto);
-  if (lead.length) {
-    const first = slides[firstPhoto] as Extract<Slide, { kind: 'photo' }>;
-    const html = lead.map((s) => `<p>${(s as Extract<Slide, { kind: 'text' }>).html}</p>`).join('');
-    return [{ kind: 'intro', html, backdrop: first.src }, ...slides.slice(firstPhoto)];
-  }
-  return slides;
+  if (firstPhoto === -1) return slides;
+  const first = slides[firstPhoto] as Extract<Slide, { kind: 'photo' }>;
+  const lead = slides.slice(0, firstPhoto).map((s) => (s as Extract<Slide, { kind: 'text' }>).html);
+  const description = post.data.description?.trim();
+  if (!lead.length && description) lead.push(inline(description));
+  if (!lead.length) return slides;
+  const html = lead.map((p) => `<p>${p}</p>`).join('');
+  return [{ kind: 'intro', html, backdrop: first.src }, ...slides.slice(firstPhoto)];
 }
