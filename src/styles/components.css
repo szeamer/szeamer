@@ -337,10 +337,18 @@
     opacity 600ms ease;
 }
 
+/* With "Reduce motion" on: a short lift and fade instead of the full sweep. */
 @media (prefers-reduced-motion: reduce) {
-  .slideshow__intro,
+  .slideshow__intro {
+    transform: translateY(-1.5rem);
+    transition-duration: 350ms, 350ms, 0s;
+    transition-delay: 0s, 0s, 350ms;
+  }
+
   .slideshow__intro.is-open {
     transform: none;
+    transition-duration: 350ms, 350ms;
+    transition-delay: 0s, 0s;
   }
 }
 

@@ -13,7 +13,8 @@ html {
 
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
-  *, *::before, *::after {
+  /* The photo intro keeps a short, gentle slide (see components.css). */
+  *:not(.slideshow__intro), *::before, *::after {
     animation-duration: 0.01ms !important;
     transition-duration: 0.01ms !important;
   }
