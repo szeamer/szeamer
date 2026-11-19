@@ -12,7 +12,7 @@ import { site } from '../data/site';
 interface Props {
   title?: string;
   description?: string;
-  /** Use the wider column, for gallery pages. */
+  /** Let content use the full wide column (galleries, photos) instead of reading width. */
   wide?: boolean;
   /** Fit the page exactly to the browser window, with no scrolling and no footer (photo slideshows). */
   fit?: boolean;
@@ -20,7 +20,9 @@ interface Props {
 
 const { title, description = site.description, wide = false, fit = false } = Astro.props;
 const pageTitle = title ? `${title} · ${site.title}` : site.title;
-const shell = wide ? 'shell shell--wide' : 'shell';
+// Header, footer and page all share the wide column, so every page has the same
+// header. Text pages keep a reading-width column inside it, aligned left.
+const shell = 'shell shell--wide';
 ---
 
 <!doctype html>
@@ -45,7 +47,7 @@ const shell = wide ? 'shell shell--wide' : 'shell';
       <Header shell={shell} />
       <main class="site-main" id="main">
         <div class={shell}>
-          <slot />
+          {wide ? <slot /> : <div class="measure"><slot /></div>}
         </div>
       </main>
       {!fit && <Footer shell={shell} />}
