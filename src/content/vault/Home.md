@@ -1,11 +1,12 @@
 ---
-title: Silvia Zeamer
+title:
 tagline:
 description: "Personal site: writing, art, projects, and photos."
 linkedin: https://www.linkedin.com/in/szeamer/
 ebird: https://ebird.org/profile/NDUwMzA0NA
 inaturalist: https://www.inaturalist.org/people/szeamer
-pages: []
+pages:
+  - Photos
 ---
 I'm Silvia Zeamer. I'm a software engineer who also holds in high regard good prose, fine arts and crafts, and nice lighting. I'm based in [Boston](https://www.reddit.com/r/boston/comments/1ljg3ay/why_is_boston_the_best_city_in_the_us/), MA, but sometimes in [Stavanger](https://en.wikipedia.org/wiki/History_of_the_petroleum_industry_in_Norway), [Norway](https://www.visitnorway.com/places-to-go/fjord-norway/the-stavanger-region/). I believe deeply in the value of a vigorous liberal arts education, which I was lucky enough to receive at [Wellesley College](https://en.wikipedia.org/wiki/Wellesley_College). Having dedicated my career (or what I can presently foresee of my career) to building useful and interesting software, I distribute my free time between a perhaps inadvisably large array of contrasting activities:
 - designing and making knitwear
