@@ -110,6 +110,8 @@ JavaScript (`src/components/PhotoSlideshow.astro`); without it the slides scroll
 
 On sync, every photo is shrunk to 2400px on its longest edge and stripped of
 metadata (camera details, GPS location) before it reaches the repo, which is public.
+First, its camera, lens, settings and date taken are read into
+`src/content/vault/photo-info.json` (never its location) and shown under the photo.
 Astro then makes the smaller sizes for phones.
 
 ### Art
