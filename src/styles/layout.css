@@ -24,9 +24,10 @@
   margin-bottom: var(--space-6);
 }
 
-/* Reading width for text pages, aligned with the left edge of the header. */
+/* Reading width for text pages, centred under the full-width header. */
 .measure {
   max-width: var(--measure);
+  margin-inline: auto;
 }
 
 .site-header__inner {
