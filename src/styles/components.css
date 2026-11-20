@@ -309,8 +309,8 @@
 }
 
 /* Introduction: a see-through layer exactly over the first photo (sized and placed
-   by the script), so the photo shows through at 25%. Lifted up and away on the
-   first "next". */
+   by the script), so the photo shows through at 25%. Slides off to the left on
+   the first "next", the same way the photos move. */
 .slideshow__intro {
   position: absolute;
   inset: 0;
@@ -321,7 +321,7 @@
   background: color-mix(in srgb, var(--color-bg) 75%, transparent);
   opacity: 0;
   visibility: hidden;
-  transform: translateY(-100%);
+  transform: translateX(-100%);
   transition:
     transform 600ms cubic-bezier(0.6, 0, 0.3, 1),
     opacity 600ms ease,
@@ -337,10 +337,10 @@
     opacity 600ms ease;
 }
 
-/* With "Reduce motion" on: a short lift and fade instead of the full sweep. */
+/* With "Reduce motion" on: a short sideways nudge and fade instead of the full slide. */
 @media (prefers-reduced-motion: reduce) {
   .slideshow__intro {
-    transform: translateY(-1.5rem);
+    transform: translateX(-1.5rem);
     transition-duration: 350ms, 350ms, 0s;
     transition-delay: 0s, 0s, 350ms;
   }
